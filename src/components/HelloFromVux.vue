@@ -1,19 +1,20 @@
 <template>
   <div>
     <div class="vux-demo">
-      <img class="logo" src="../assets/vux_logo.png">
+      <img class="logo" src="../assets/images/logo.png">
       <h1> </h1>
     </div>
     <group>
       <x-input placeholder="请输入手机号">
-        <img slot="label" style="padding-right:10px;display:block;" src="http://dn-placeholder.qbox.me/110x110/FF2D55/000" width="24" height="24">
+        <img slot="label" style="padding-right:10px;display:block;" src="../assets/images/log1.png" width="24" height="24">
       </x-input>
       <x-input placeholder="请输入密码">
-        <img slot="label" style="padding-right:10px;display:block;" src="http://dn-placeholder.qbox.me/110x110/FF2D55/000" width="24" height="24">
+        <img slot="label" style="padding-right:10px;display:block;" src="../assets/images/log3.png" width="24" height="24">
       </x-input>
     </group>
     <box gap="10px 10px">
-      <x-button plain type="primary" style="border-radius:99px;">登陆</x-button>
+      <!--<x-button plain type="primary" style="border-radius:99px;">登陆</x-button>-->
+      <w-button blue>登陆</w-button>
     </box>
     <box gap="10px 10px">
       <flexbox>
@@ -34,7 +35,7 @@
 
 <script>
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem } from 'vux'
-
+import WButton from './Common/Button.vue'
 export default {
   components: {
     Group,
@@ -42,7 +43,8 @@ export default {
     XButton,
     Box,
     Flexbox,
-    FlexboxItem
+    FlexboxItem,
+    WButton
   },
   data () {
     return {
@@ -56,7 +58,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .vux-demo {
   text-align: center;
 }
