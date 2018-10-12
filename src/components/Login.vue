@@ -6,16 +6,15 @@
     <div class="charge-group">
       <group>
         <x-input placeholder="请输入手机号">
-          <img slot="label" style="padding-right:10px;display:block;" v-lazy="lg1" height="24">
+          <img class="pr10 block" slot="label" v-lazy="lg1" height="24">
         </x-input>
       </group>
       <group>
         <x-input placeholder="请输入密码">
-          <img slot="label" style="padding-right:10px;display:block;" v-lazy="lg3" height="24">
+          <img class="pr10 block" slot="label" v-lazy="lg3" height="24">
         </x-input>
       </group>
     </div>
-
     <box gap="1em 1em">
       <w-button @click.native="doLogin" blue>登陆</w-button>
     </box>
@@ -40,6 +39,7 @@
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem } from 'vux'
 import { LG_IMG } from '../script/commonStatic'
 import WButton from './Common/Button.vue'
+// import api from '../api'
 export default {
   name:'Login',
   components: {
@@ -59,9 +59,34 @@ export default {
     }
   },
   methods: {
-    doLogin(){
-      this.$router.push({ name: 'home'});
-    }
+    doLogin() {
+      this.$router.push({path:'/home'})
+
+      // this.$store.dispatch('LoginByUsername', {'username':'wang','password':'123456'}).then(() => {
+      //   // this.loading = false
+      //   //this.$router.push({ path: this.redirect || '/' })
+      //   console.log('登陆')
+      // }).catch(() => {
+      //   // this.loading = false
+      //   console.log('error')
+      // })
+
+      // fetch("http://blog.parryqiu.com",{
+      //   headers: {
+      //     'Accept': 'application/json',
+      //     'Content-Type' : 'application/json'
+      //   }
+      // }).then(function(response){console.log(response)})
+        // async function ff() {
+        //   let data = await fetch('login').then(res => console.log(res));
+        //   return data;
+        // }
+        // ff().then(res => {
+        //   // console.log(res, 'res');
+        //   // this.text = 'name:' + res.name + ',age:' + res.age + 'sex:' + res.sex;
+        //   console.log(res);
+        // }).catch(reason => console.log(reason.message));
+      }
     // doLogin (){
     //   if (this.userName == ''){
     //     alert('用户名不能为空');

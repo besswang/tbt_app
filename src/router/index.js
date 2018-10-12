@@ -32,7 +32,55 @@ export default new Router({
     {
       path: '/home',
       name: 'home',
-      component: components('Home')//首页
+      component: components('home/Home')//首页
+    },
+    {
+      path: '/project',
+      name: 'project',
+      component: components('project/Project')//项目
+    },
+    {
+      path: '/project/particulars',
+      name: 'Particulars',
+      component: components('project/Particulars'),//项目详情
+      children:[
+        {
+          path: '/',
+          name: 'Tab0',
+          component: components('project/Tab0'),//概要
+        },
+        {
+          path: '/project/particulars/tab0',
+          name: 'Tab0',
+          component: components('project/Tab0'),//概要
+        },
+        {
+          path: '/project/particulars/tab1',
+          name: 'Tab1',
+          component: components('project/Tab1'),//团队
+        },
+        {
+          path: '/project/particulars/tab2',
+          name: 'Tab2',
+          component: components('project/Tab2'),//财务
+        },
+        {
+          path: '/project/particulars/tab3',
+          name: 'Tab3',
+          component: components('project/Tab3'),//规划
+        },
+        {
+          path: '/project/particulars/tab4',
+          name: 'Tab4',
+          component: components('project/Tab4'),//热度
+        },
+        {
+          path: '/project/particulars/tab5',
+          name: 'Tab5',
+          component: components('project/Tab5'),//评级
+        }
+      ]
     }
+
   ]
 })

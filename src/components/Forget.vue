@@ -1,8 +1,6 @@
 <template>
   <div class="register">
-    <div class="reg-header">
-      <x-header @on-click-back style="background:#fff;" :left-options="{backText: '忘记密码'}"></x-header>
-    </div>
+    <x-header @on-click-back :left-options="{backText: '忘记密码'}"></x-header>
     <div class="charge-group mt2em">
       <group>
         <x-input placeholder="请输入手机号">
@@ -84,16 +82,6 @@ export default {
   }
   .charge-group >>> .weui-cells {
     margin-top:0;
-  }
-
-  /*注册header头重置*/
-  .reg-header >>> .vux-header .vux-header-left a{
-    color:#000;
-    font-size:1.2em;
-  }
-  .reg-header >>> .vux-header .vux-header-left .left-arrow:before{
-    border: 1px solid #000;
-    border-width: 1px 0 0 1px;
   }
 </style>
 
