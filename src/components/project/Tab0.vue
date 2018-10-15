@@ -71,6 +71,9 @@ export default {
 
     }
   },
+  mounted(){
+
+  },
   methods: {
     onItemClick(){
       console.log("item")

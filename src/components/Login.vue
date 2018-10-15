@@ -60,6 +60,16 @@ export default {
   },
   methods: {
     doLogin() {
+      this.$axios({
+        method:'get',
+        url:'/api/login'
+      }).then(function (res) {
+        console.log(res.data)
+        this.$store.commit('ADD_COUNT',json.data.token)
+      }.bind(this)).catch(function (err) {
+        console.log('登陆失败')
+      }.bind(this))
+
       this.$router.push({path:'/home'})
 
       // this.$store.dispatch('LoginByUsername', {'username':'wang','password':'123456'}).then(() => {

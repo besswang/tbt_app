@@ -8,7 +8,7 @@
       <actionsheet
         v-model="shareShow"
         :menus="shareMenus"
-        @on-click-menu="click"
+        @on-click-menu="shareClick"
         @on-after-hide="log('after hide')"
         @on-after-show="log('after show')">
       </actionsheet>
@@ -27,7 +27,10 @@
         </flexbox-item>
       </flexbox>
       <flexbox align="center" class="pt10 pb15">
-        <flexbox-item :span="1/3">
+        <flexbox-item :span="1/3"
+           v-clipboard:copy="officialURL"
+           v-clipboard:success="onCopy"
+           v-clipboard:error="onError">
           <span v-lazy:background-image="pro1" class="pro-icon"><i class="in-block" style="width:16px;"></i>官方网站</span>
         </flexbox-item>
         <flexbox-item :span="1/3" style="margin-left:0;">
@@ -48,7 +51,7 @@
         :menus="paperMenu"
         theme="android"
         show-cancel
-        @on-click-menu="click"
+        @on-click-menu="paperClick"
         @on-after-hide="paperLog('after hide')"
         @on-after-show="paperLog('after show')">
       </actionsheet>
@@ -67,18 +70,20 @@
     </div>
 
     <swiper v-model="tabSelected" height="700px" :show-dots="false">
-      <swiper-item ref="h" v-for="n in tabTitle" :key="n" @on-get-height="height">
+      <swiper-item v-for="n in tabTitle" :key="n">
         <div class="tab-swiper vux-center">
           <router-view></router-view>
         </div>
       </swiper-item>
     </swiper>
-
+    <toast width="80%" v-model="showMsg" type="text" :time="1000" is-show-mask :position="position">
+      <p class="plr10">投不投：复制成功</p>
+    </toast>
   </div>
 </template>
 
 <script>
-  import {Actionsheet, Flexbox, FlexboxItem, Tab, TabItem, XHeader, Swiper, SwiperItem, Sticky } from 'vux'
+  import {Actionsheet, Flexbox, FlexboxItem, Tab, TabItem, XHeader, Swiper, SwiperItem, Sticky, Toast } from 'vux'
   import {PROJECT_IMG} from '../../script/commonStatic'
   export default {
   name:'Particulars',
@@ -91,10 +96,14 @@
     TabItem,
     Swiper,
     SwiperItem,
-    Sticky
+    Sticky,
+    Toast
   },
   data () {
     return {
+      showMsg:false,
+      officialURL:'https://www.baidu.com/',//官方网址
+      position:'bottom',
       disabled: typeof navigator !== 'undefined' && /iphone/i.test(navigator.userAgent) && /ucbrowser/i.test(navigator.userAgent),
       tabSelected:0,//当前tab
       paperMenu: {
@@ -120,15 +129,19 @@
       }
     }
   },
-  mounted:function(){
+
+  mounted(){
 
   },
   methods: {
-    // height(event){
-    //   let h = this.$refs.h.getBoundingClientRect().top
-    //   console.log(event)
-    //   console.log(h)
-    // },
+    //复制
+    onCopy: function (e) {
+      console.log(e.text);
+      this.showMsg = true;
+    },
+    onError: function (e) {
+      console.log('无法复制文本！')
+    },
     switchTabItem (index) {
       // console.log('on-before-index-change', index)
       // this.$vux.loading.show({
@@ -146,7 +159,10 @@
     paperLog (str){
       console.log(str)
     },
-    click (key) {
+    shareClick (key) {
+      console.log(key)
+    },
+    paperClick (key) {
       console.log(key)
     },
     changeDown(){

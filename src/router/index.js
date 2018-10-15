@@ -58,6 +58,7 @@ export default new Router({
           path: '/project/particulars/tab1',
           name: 'Tab1',
           component: components('project/Tab1'),//团队
+
         },
         {
           path: '/project/particulars/tab2',
@@ -80,7 +81,31 @@ export default new Router({
           component: components('project/Tab5'),//评级
         }
       ]
+    },
+    {
+      path: '/center',
+      name: 'Mine',
+      meta:{
+        requireAuth:true // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: components('center/Mine'),//我的
+    },
+    {
+      path: '/center/contact',
+      name: 'Contact',
+      component: components('center/Contact')//联系我们
+    },
+    {
+      path: '/center/amend',
+      name: 'Amend',
+      component: components('center/Amend')//修改密码
+    },
+    {
+      path: '/center/rename',
+      name: 'Rename',
+      component: components('center/Rename')//修改昵称
     }
 
   ]
+
 })

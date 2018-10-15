@@ -16,7 +16,7 @@
           <img slot="icon-active" src="./assets/images/tb2_active.png">
           <span slot="label">项目</span>
         </tabbar-item>
-        <tabbar-item link="">
+        <tabbar-item link="/center">
           <img slot="icon" src="./assets/images/tb3.png">
           <img slot="icon-active" src="./assets/images/tb3_active.png">
           <span slot="label">我的</span>
@@ -50,7 +50,7 @@
     watch:{
       $route(to,from){
         // if(to.path == '/' || to.path == '/home' || to.path == '/audioBook' || to.path == '/mine'){
-        this.barShow = to.path === '/home' || to.path === '/project';
+        this.barShow = to.path === '/home' || to.path === '/project' || to.path === '/center';
       }
     },
     computed: {
