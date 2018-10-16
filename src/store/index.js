@@ -5,11 +5,12 @@ import getters from './getters'
 
 Vue.use(Vuex)
 
+
 const index = new Vuex.Store({
+  getters,
   modules: {
     user
-  },
-  getters
+  }
 })
 
 export default index

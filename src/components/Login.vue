@@ -32,6 +32,7 @@
         </flexbox-item>
       </flexbox>
     </box>
+    <!--<p>{{name}}</p>-->
   </div>
 </template>
 
@@ -39,6 +40,7 @@
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem } from 'vux'
 import { LG_IMG } from '../script/commonStatic'
 import WButton from './Common/Button.vue'
+// import { mapGetters } from 'vuex'
 // import api from '../api'
 export default {
   name:'Login',
@@ -58,19 +60,27 @@ export default {
       lg3: LG_IMG[2],
     }
   },
+  computed:{
+    // ...mapGetters(['name'])
+  },
+  // mounted(){
+  //   console.log(this.$store.state.user.name)
+  // },
   methods: {
     doLogin() {
-      this.$axios({
-        method:'get',
-        url:'/api/login'
-      }).then(function (res) {
-        console.log(res.data)
-        this.$store.commit('ADD_COUNT',json.data.token)
-      }.bind(this)).catch(function (err) {
-        console.log('登陆失败')
-      }.bind(this))
+      // console.log(this.$axios.login())
+      // this.$store.commit('ADD_COUNT','4455')
+      // this.$axios({
+      //   method:'get',
+      //   url:'/api/login'
+      // }).then(function (res) {
+      //   console.log(res.data)
+      //   this.$store.commit('ADD_COUNT',json.data.token)
+      // }.bind(this)).catch(function (err) {
+      //   console.log('登陆失败')
+      // }.bind(this))
 
-      this.$router.push({path:'/home'})
+      //this.$router.push({path:'/home'})
 
       // this.$store.dispatch('LoginByUsername', {'username':'wang','password':'123456'}).then(() => {
       //   // this.loading = false

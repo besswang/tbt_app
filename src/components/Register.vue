@@ -15,7 +15,7 @@
             </x-input>
           </flexbox-item>
           <flexbox-item :span="1/4">
-            <div class="vf-code">
+            <div class="vf-code" @click="registerCode">
               <span class="a-inner link-text">发送验证码</span>
             </div>
           </flexbox-item>
@@ -29,7 +29,7 @@
     </div>
 
     <box gap="1em 1em">
-      <w-button blue>注册</w-button>
+      <w-button blue @click.native="goRegisterBtn">注册</w-button>
     </box>
     <p class="center foot-text" style="color:#949494;font-size:10px;">注册即代表阅读并同意
       <router-link tag='a' :to="{path: '/tcp'}">
@@ -43,6 +43,7 @@
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem, XHeader } from 'vux'
 import WButton from './Common/Button.vue'
 import { LG_IMG } from '../script/commonStatic'
+import { mapActions } from 'vuex'
 export default {
   name:'Register',
   components: {
@@ -61,12 +62,31 @@ export default {
       lg2: LG_IMG[1],
       lg3: LG_IMG[2],
     }
+  },
+  methods:{
+    registerCode(){
+      console.log("fasong")
+      let tel = '15057187176'
+      this.$axios.post('/tbt_user/user/registerCode/'+tel,{})
+        .then(function(response) {
+          console.log(response)
+        })
+        .catch(function(error) {
+          alert(error);
+        });
+    },
+    //注册
+    goRegisterBtn(){
+      // let phone = this.$store.state.user.register.phone
+      this.$store.dispatch('Register','666').then(() => {
+        //this.loading = true;
+      }).catch((e) => {
+        //this.loading = false;
+      })
+    }
   }
 }
 </script>
-<style>
-
-</style>
 <style scoped>
   .mt2em{
     margin-top:2em;

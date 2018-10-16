@@ -1,28 +1,20 @@
-import request from '@/utils/request'
-
-export function loginByUsername(username, password) {
-  const data = {
-    username,
-    password
-  }
-  return request({
-    url: '/login/login',
-    method: 'post',
-    data
-  })
+import {fetch} from "../fetch";
+export default {
+  // 注册-获取验证码
+  registerCode(params){
+    return fetch({
+      url: '/tbt_user/user/registerCode/15057187176',
+      method: 'post',
+      params
+    })
+  },
+  // 注册
+  // regist(params){
+  //   return fetch({
+  //     url: '/tbt_user/user/register',
+  //     method: 'post',
+  //     params
+  //   })
+  // }
 }
-
-export function logout() {
-  return request({
-    url: '/login/logout',
-    method: 'post'
-  })
-}
-
-export function getUserInfo(token) {
-  return request({
-    url: '/user/info',
-    method: 'get',
-    params: { token }
-  })
-}
+const regist = params => fetch('/tbt_user/user/register',params,'POST');

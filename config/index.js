@@ -6,11 +6,19 @@ const path = require('path')
 
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/tbt_user':{
+        target: 'http://47.98.216.251:80/tbt_user',//测试线
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: {
+          '^/tbt_user': ''
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
