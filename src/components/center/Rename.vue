@@ -13,14 +13,13 @@
     </div>
 
     <box gap="1em 1em">
-      <w-button blue>保存</w-button>
+      <x-button type="primary">保存</x-button>
     </box>
   </div>
 </template>
 
 <script>
 import { Group, Box, XInput, XButton, XHeader } from 'vux'
-import WButton from '../Common/Button.vue'
 export default {
   name:'Register',
   components: {
@@ -28,7 +27,6 @@ export default {
     XInput,
     XButton,
     Box,
-    WButton,
     XHeader
   },
   data () {

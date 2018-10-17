@@ -1,15 +1,16 @@
 import Vue from 'vue'
+// import Vuex from 'vuex' //引入状态管理
+// import { mapState, mapActions, mapGetters } from 'vuex'
 import FastClick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
 import App from './App'
 import router from './router'
 import './assets/css/common.css'
-import store from './store'
+import store from './store/index.js'
 import './mock/index.js'
 import VueClipboard from 'vue-clipboard2'
 import axios from 'axios'
 import qs from 'qs'
-// import Vuex from 'vuex' //引入状态管理
 import { TransferDom, Loading, LoadingPlugin, Divider,ToastPlugin } from 'vux'
 Vue.use(VueClipboard)
 /**
@@ -21,6 +22,9 @@ Vue.use(VueLazyload);
  */
 FastClick.attach(document.body);
 // Vue.use(Vuex);
+// Vue.prototype.$mapState = mapState
+// Vue.prototype.$mapActions = mapActions
+// Vue.prototype.$mapGetters = mapGetters
 Vue.directive('transfer-dom', TransferDom);
 Vue.component('loading', Loading);
 Vue.component('divider', Divider);

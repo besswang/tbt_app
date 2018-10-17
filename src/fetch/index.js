@@ -4,7 +4,6 @@ var qs = require('qs');
 // import index from '../index/index';
 // import router from '../router';
 export function fetch(options) {
-  console.log(options)
   return new Promise((resolve, reject) => {
     console.log(options)
     //创建一个axios实例
@@ -39,18 +38,23 @@ export function fetch(options) {
       let data = response.data;
       console.log(data)
       let status = response.status;
-      if((status===200 || status === 304) && data.code==='SUCCESS' ){
-        return response;
-      }else if(data.code==='FORBIDDEN' || data.code==='UNAUTHORIZED'){
-        // index.commit(types.LOGOUT);
-        // router.replace({
-        //     path: 'bs_login',
-        //     query: {redirect: router.currentRoute.fullPath}
-        // })
-        return Promise.reject(data.remark);
+      if(status === 200){
+        return Promise.resolve(response)
       }else{
-        return Promise.reject(data.remark);
+        return Promise.reject(response)
       }
+      // if((status===200 || status === 304) && data.code==='SUCCESS' ){
+      //   return response;
+      // }else if(data.code==='FORBIDDEN' || data.code==='UNAUTHORIZED'){
+      //   // index.commit(types.LOGOUT);
+      //   // router.replace({
+      //   //     path: 'bs_login',
+      //   //     query: {redirect: router.currentRoute.fullPath}
+      //   // })
+      //   return Promise.reject(data.remark);
+      // }else{
+      //   return Promise.reject(data.remark);
+      // }
 
     }, function (err) {
       // 对响应错误做点什么
@@ -76,19 +80,19 @@ export function fetch(options) {
       return Promise.reject(err.message);
     });
     instance[options.method](options.url,options.params).then(response => {
-      if(response.data.code==='SUCCESS'){
+      // if(response.data.code==='SUCCESS'){
         // vm.$message.success(response.data.remark)
         resolve(response.data);
-      }else{
+      // }else{
         // Promise.reject('11')
         // vm.$message.error(response.data.remark)
         // throw Error(response.data.remark)
         // reject(response.data.remark)
-      }
+      // }
 
     })
       .catch((error) => {
-        vm.$message.error(error)
+        //vm.$message.error(error)
       })
   })
 }

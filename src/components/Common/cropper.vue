@@ -1,5 +1,6 @@
 <template>
   <div id="demo">
+    <!--头像上传-->
     <!--组件源码-->
     <!--https://github.com/leileibrother/cropper-js-vue- -->
     <!--或者,如果调用拍照功能，图片发生旋转，可以-->

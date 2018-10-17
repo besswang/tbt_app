@@ -15,14 +15,13 @@
     </div>
 
     <box gap="1em 1em">
-      <w-button blue>保存</w-button>
+      <x-button type="primary">保存</x-button>
     </box>
   </div>
 </template>
 
 <script>
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem, XHeader } from 'vux'
-import WButton from '../Common/Button.vue'
 import { LG_IMG } from '../../script/commonStatic'
 export default {
   name:'Register',
@@ -33,7 +32,6 @@ export default {
     Box,
     Flexbox,
     FlexboxItem,
-    WButton,
     XHeader
   },
   data () {

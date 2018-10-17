@@ -1,6 +1,6 @@
 <template>
   <div class="list">
-    <!--项目列表-->
+    <!--project-list项目列表-->
     <div class="new-list vux-1px-tb" @click="goParticulars">
       <flexbox align="center">
         <flexbox-item :span="1/4">

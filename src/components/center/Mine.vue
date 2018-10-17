@@ -25,7 +25,7 @@
       </li>
     </ul>
     <box gap="1em 1em">
-      <w-button blue>退出</w-button>
+      <x-button type="primary">退出</x-button>
     </box>
     <!--分享-->
     <div v-transfer-dom>
@@ -41,8 +41,7 @@
 </template>
 
 <script>
-import {Box, Flexbox, FlexboxItem, Actionsheet} from 'vux'
-import WButton from '../Common/Button.vue'
+import {Box, Flexbox, FlexboxItem, Actionsheet ,XButton} from 'vux'
 import cropper from "@/components/Common/cropper"
 import {MI_IMG} from "../../script/commonStatic";
 export default {
@@ -52,7 +51,7 @@ export default {
     Flexbox,
     FlexboxItem,
     Actionsheet,
-    WButton,
+    XButton,
     cropper
   },
   data () {

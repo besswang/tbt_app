@@ -1,5 +1,4 @@
-// import { loginByUsername, logout, getUserInfo } from '@/api/login'
-// import { getToken, setToken, removeToken } from '@/utils/auth'
+
 import * as types from '../mutation-types'
 import api from '../../api';
 
@@ -8,24 +7,58 @@ const register = {
   phone:'123456',
   password:''
 }
+//验证码
+const code = {
+  count:0,//60s计数器
+  timer:null,
+  codeDisabled:false,//验证按钮点击状态
+  text:'发送验证码'
+}
 const state = {
-  register
+  register,
+  code
 }
 const mutations = {
   [types.GO_REGISTER](state,res){
-    console.log("1122")
     state.phone = res.phone;
     state.password = res.password
+  },
+  [types.GET_CODE](state,data){
+    console.log('9999')
+    console.log(data)
+    let code = state.code
+    if (!code.timer) {
+      code.count = 60;
+      code.timer = setInterval(() => {
+        if (code.count > 0 && code.count <= 60) {
+          code.count--;
+          code.text = code.count+'s'
+          code.codeDisabled = true;
+        } else {
+          clearInterval(this.timer);
+          code.text = '发送验证码'
+          code.timer = null;
+          code.codeDisabled = false;
+        }
+      }, 1000)
+    }
   }
 }
-const action = {
+
+
+const actions = {
   Register({commit},params){
-    console.log(params)
-    api.regist(params)
+    console.log('params'+params)
+    api.regist()
       .then(res => {
         console.log(res)
         commit(types.GO_REGISTER,res)
+
       })
+  },
+  async getCode({commit}){
+    let res = await api.registerCode()
+    commit(types.GET_CODE,res)
   }
 }
 // const user = {
@@ -176,6 +209,6 @@ const action = {
 export default {
   state,
   mutations,
-  action
+  actions
 }
 

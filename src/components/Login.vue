@@ -16,7 +16,7 @@
       </group>
     </div>
     <box gap="1em 1em">
-      <w-button @click.native="doLogin" blue>登陆</w-button>
+      <x-button type="primary" @click.native="doLogin">登陆</x-button>
     </box>
     <box gap="1em 1em">
       <flexbox>
@@ -39,7 +39,6 @@
 <script>
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem } from 'vux'
 import { LG_IMG } from '../script/commonStatic'
-import WButton from './Common/Button.vue'
 // import { mapGetters } from 'vuex'
 // import api from '../api'
 export default {
@@ -50,8 +49,7 @@ export default {
     XButton,
     Box,
     Flexbox,
-    FlexboxItem,
-    WButton
+    FlexboxItem
   },
   data () {
     return {
