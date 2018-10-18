@@ -1,6 +1,6 @@
 <template>
   <div class="register">
-    <x-header @on-click-back :left-options="{backText: '修改昵称'}">
+    <x-header :left-options="{backText: '修改昵称'}">
       <span class="header-title" slot="left"></span>
     </x-header>
     <div class="charge-group mt2em">

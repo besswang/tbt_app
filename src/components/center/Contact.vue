@@ -1,6 +1,6 @@
 <template>
   <div class="contact">
-    <x-header @on-click-back :left-options="{backText: '联系我们'}"></x-header>
+    <x-header :left-options="{backText: '联系我们'}"></x-header>
     <div class="mi5-con">
       <img src="" alt="" v-lazy="mi5">
       <p class="rc-description center">当前版本1.0</p>

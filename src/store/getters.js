@@ -1,6 +1,11 @@
 // 二，用getters来获取state的状态，而不是直接使用state
 const getters = {
-  sidebar: state => state.app.sidebar,
+  phone: state => state.user.register.phone,
+  password: state => state.user.register.password,
+  codeDisabled:state => state.user.code.codeDisabled,
+  text:state => state.user.code.text,
+  count:state => state.user.code.count,
+
   language: state => state.app.language,
   size: state => state.app.size,
   device: state => state.app.device,

@@ -1,21 +1,31 @@
 import {fetch} from "../fetch";
+import qs from 'qs'
 export default {
   // 注册-获取验证码
-  registerCode(params){
+  registerCodeApi(params){
+    let phone = vm.$store.state.user.register.phone
     return fetch({
-      // url:`/tbt_user/user/registerCode/${params.id}`
-      url: '/tbt_user/user/registerCode/15057187176',
+      url:vm.$jk.registerCode+phone,
       method: 'post',
       params
     })
   },
   //注册
-  regist(params){
+  registerApi(params){
+    console.log("api下")
+    console.log(typeof params)
+    //let pa = JSON.stringify(params)
     return fetch({
-      url: '/tbt_user/user/register',
+      url: vm.$jk.register,
       method: 'post',
-      params
+      body: params
     })
-  }
+  },
+  //登陆
+  // login(params){
+  //   return fetch({
+  //
+  //   })
+  // }
 }
 //export const regist = params => fetch('/tbt_user/user/register',params,'POST');

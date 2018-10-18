@@ -4,42 +4,61 @@ var qs = require('qs');
 // import index from '../index/index';
 // import router from '../router';
 export function fetch(options) {
+  //debugger
   return new Promise((resolve, reject) => {
+    console.log("看op")
     console.log(options)
     //创建一个axios实例
     const instance = axios.create({
       //设置默认根地址
+      responseType:'json',
       // baseURL: '/hn-shop-web/admin',
       //设置请求超时设置
       timeout: 2000,
       //设置请求时的header
       headers: {
-        "Content-Type":"application/x-www-form-urlencoded"
+        //"Content-Type":"application/x-www-form-urlencoded"
+        //"Content-Type":"application/json"
+        //"Content-Type":'application/x-www-form-urlencoded;charset=utf-8'
       },
 
-      transformRequest: [ data => {
-        return qs.stringify(data);
-      }],
-
+      // transformRequest: [ data => {
+      //   console.log(data)
+      //   console.log("转数据了")
+      //   console.log(data)
+      //   return qs.stringify(data);
+      // }],
 
     });
-
-    // instance.interceptors.request.use(function (config) {
-    //     // 在发送请求之前做些什么
-    //     console.log(config)
-    //     return config;
-    // }, function (error) {
-    //     // 对请求错误做些什么
-    //     return Promise.reject(error);
-    // });
+    instance.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest';
+    instance.defaults.headers.get['X-Requested-With'] = 'XMLHttpRequest';
+    instance.defaults.transformRequest = [function (data) {
+        //数据序列化
+      return qs.stringify(data);
+      }
+    ];
+    instance.interceptors.request.use(function (config) {
+        // 在发送请求之前做些什么
+        // config.headers.accept = 'application/json'
+        return config;
+    }, function (error) {
+        // 对请求错误做些什么
+        return Promise.reject(error);
+    });
 
     instance.interceptors.response.use(function (response) {
       console.log(response)
+      console.log("接收数据")
       let data = response.data;
-      console.log(data)
+      //console.log(data)
       let status = response.status;
       if(status === 200){
-        return Promise.resolve(response)
+        if(data.code === 400){
+          vm.$vux.toast.text(data.msg, 'center')
+          //return false;
+        }else if(data.success){
+          return Promise.resolve(response)
+        }
       }else{
         return Promise.reject(response)
       }
@@ -79,6 +98,7 @@ export function fetch(options) {
       }
       return Promise.reject(err.message);
     });
+    // let obj = JSON.stringify();
     instance[options.method](options.url,options.params).then(response => {
       // if(response.data.code==='SUCCESS'){
         // vm.$message.success(response.data.remark)

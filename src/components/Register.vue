@@ -3,20 +3,20 @@
     <x-header @on-click-back :left-options="{backText: '注册用户'}"></x-header>
     <div class="charge-group mt2em">
       <group>
-        <x-input placeholder="请输入手机号">
+        <x-input placeholder="请输入手机号" v-model="tel">
           <img slot="label" style="padding-right:10px;display:block;" v-lazy="lg1" height="24">
         </x-input>
       </group>
       <group>
         <flexbox>
           <flexbox-item>
-            <x-input placeholder="请输入验证码">
+            <x-input placeholder="请输入验证码" v-model="code" is-type="number" :min="4" :max="4">
               <img slot="label" style="padding-right:10px;display:block;" v-lazy="lg2" height="24">
             </x-input>
           </flexbox-item>
           <flexbox-item :span="2/5">
             <div class="vf-code">
-              <x-button  @click.native="getCode"
+              <x-button  @click.native="registerCodeTem"
                           :disabled="codeDisabled"
                          class="code-inner" slot="right" type="default" mini>{{text}}</x-button>
               <!--<span v-show="!show" class="code-inner link-text">{{count}}</span>-->
@@ -27,15 +27,14 @@
         </flexbox>
       </group>
       <group>
-        <x-input placeholder="请输入密码">
+        <x-input placeholder="请输入密码" v-model="pw">
           <img slot="label" style="padding-right:10px;display:block;" v-lazy="lg3" height="24">
         </x-input>
       </group>
     </div>
     <box gap="1em 1em">
-      <x-button type="primary" :disabled="disabled" @click.native="Register('6667788')">注册</x-button>
-      <p>{{phone}}</p>
-
+      <x-button type="primary" :disabled="disabled" @click.native="goRegisterAxios">注册Axios</x-button>
+      <x-button type="primary" :disabled="disabled" @click.native="goRegisterFetch">注册Fetch</x-button>
     </box>
 
     <p class="center foot-text" style="color:#949494;font-size:10px;">注册即代表阅读并同意
@@ -43,15 +42,13 @@
         <span class="link-text">用户协议</span>
       </router-link>
     </p>
-    <p>{{count}}</p>
-    <!--<p>{{count2}}</p>-->
   </div>
 </template>
 
 <script>
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem, XHeader } from 'vux'
 import { LG_IMG } from '../script/commonStatic'
-import { mapState, mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name:'Register',
   components: {
@@ -65,7 +62,9 @@ export default {
   },
   data () {
     return {
-      //codeDisabled: false,//验证码点击状态
+      tel:'',
+      code:'',//验证码
+      pw:'',//密码
       disabled: false,//注册按钮点击状态
       lg1: LG_IMG[0],
       lg2: LG_IMG[1],
@@ -73,37 +72,95 @@ export default {
     }
   },
   computed :{
-    // ...mapState(['user'])
-    ...mapState({
-      phone:state => state.user.register.phone,
-      codeDisabled:state => state.user.code.codeDisabled,
-      text:state => state.user.code.text,
-      count:state => state.user.code.count,
-      // count2:state => state.count
-    })
-
+    ...mapGetters(['codeDisabled','text','count'])
+  },
+  created() {
+    window.document.title = '注册';
   },
   methods:{
-    ...mapActions(['getCode','Register']),
-    registerCode(){
-      console.log("fasong")
-      // let tel = '15057187176'
-      // this.$axios.post('/tbt_user/user/registerCode/'+tel,{})
-      //   .then(function(response) {
-      //     console.log(response)
-      //   })
-      //   .catch(function(error) {
-      //     alert(error);
-      //   });
+    ...mapActions(['registerCode','Register','savePhone']),
+    //手机验证事件
+    verifyPhone(){
+      if(this.tel===''){
+        vm.$vux.toast.text('请输入手机号', 'top')
+        return false
+      }else if(!(/^1[34578]\d{9}$/.test(this.tel))){
+        vm.$vux.toast.text('手机号码有误，请重填', 'top')
+        this.tel = ''
+        return false;
+      }else{
+        return true
+      }
+    },
+    //验证码
+    verifyCode(){
+      if(this.code===''){
+        vm.$vux.toast.text('请输入验证码', 'top')
+        return false
+      }else if(!(/^\d{4}$/.test(this.code))){
+        vm.$vux.toast.text('请准确输入验证码位数', 'top')
+        this.code = ''
+        return false;
+      }else{
+        return true
+      }
+    },
+    //发送验证码
+    registerCodeTem(){
+      if(this.verifyPhone()){
+        //存储到仓库
+        this.savePhone(this.tel)
+        //调用接口
+        this.registerCode(this.tel)
+      }
     },
     //注册
-    goRegister(){
-      // let phone = this.$store.state.user.register.phone
-      this.$store.dispatch('Register','666').then(() => {
-        //this.loading = true;
-      }).catch((e) => {
-        //this.loading = false;
-      })
+    goRegisterFetch(){
+      // let trans = {
+      //   code:"1756",
+      //   password:"123456",
+      //   phone:"1505718716"
+      // };
+      let trans = {
+        code:"1756",
+        password:"123456",
+        phone:"1505718716"
+      };
+      this.Register(trans)
+    },
+    goRegisterAxios(){
+
+      this.$axios.post('/tbt_user/user/register',{code:"1756",password:"123456",phone:"1505718716"})
+        .then(function (response) {
+          console.log(response.data)
+        })
+        .catch(function (err) {
+          console.log(err)
+        })
+
+      // return request({
+      //   url:'/tbt_user/user/register',
+      //   method:'post',
+      //   data:{
+      //     code:'1756',
+      //     password:'123456',
+      //     phone:'123456'
+      //   }
+      // })
+
+
+      //let trans = {
+        // '"code"': this.code,
+        // '"password"': this.pw,
+        // '"phone"': this.tel
+        // code:"1756",
+        // password:"123456",
+        // phone:"1505718716"
+      //};
+      // if(this.verifyPhone() && this.verifyCode() && this.pw !== ''){
+         //this.Register(trans)
+      // }
+      //this.Register(formData)
     }
   }
 }

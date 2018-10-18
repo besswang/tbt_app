@@ -4,11 +4,12 @@ import api from '../../api';
 
 // 注册数据
 const register = {
-  phone:'123456',
+  phone:'666',
   password:''
 }
 //验证码
 const code = {
+  recode:'',
   count:0,//60s计数器
   timer:null,
   codeDisabled:false,//验证按钮点击状态
@@ -19,13 +20,19 @@ const state = {
   code
 }
 const mutations = {
-  [types.GO_REGISTER](state,res){
-    state.phone = res.phone;
-    state.password = res.password
+  //存储手机号
+  [types.SAVE_PHONE](state,value){
+    state.register.phone = value
   },
-  [types.GET_CODE](state,data){
-    console.log('9999')
+  //注册时存储手机号和密码
+  [types.SAVE_REGISTER](state,data){
+    console.log("过来存了没")
     console.log(data)
+    // state.register.phone = data.phone;
+    // state.register.password = data.password
+  },
+  //验证码倒计时
+  [types.GET_CODE](state){
     let code = state.code
     if (!code.timer) {
       code.count = 60;
@@ -47,18 +54,20 @@ const mutations = {
 
 
 const actions = {
-  Register({commit},params){
-    console.log('params'+params)
-    api.regist()
-      .then(res => {
-        console.log(res)
-        commit(types.GO_REGISTER,res)
-
-      })
+  //存储手机号到仓库中
+  savePhone({commit},value){
+    commit(types.SAVE_PHONE,value)
   },
-  async getCode({commit}){
-    let res = await api.registerCode()
-    commit(types.GET_CODE,res)
+  //注册
+  async Register({commit},params){
+    let res = await api.registerApi(params)
+    if(res){
+      commit(types.SAVE_REGISTER,res)
+    }
+  },
+  //发送验证码
+  registerCode({commit}){
+    api.registerCodeApi(state.register.phone)?commit(types.GET_CODE):''
   }
 }
 // const user = {

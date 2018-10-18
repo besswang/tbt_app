@@ -11,8 +11,10 @@ import './mock/index.js'
 import VueClipboard from 'vue-clipboard2'
 import axios from 'axios'
 import qs from 'qs'
+import jk from './api/jk.js'
 import { TransferDom, Loading, LoadingPlugin, Divider,ToastPlugin } from 'vux'
 Vue.use(VueClipboard)
+Vue.prototype.$jk = jk
 /**
  * 加载插件
  */
@@ -32,21 +34,30 @@ Vue.use(LoadingPlugin)
 Vue.use(ToastPlugin, {position: 'bottom'})
 Vue.config.productionTip = false;
 // 封装接口-start
-let axiosIns = axios.create({});
-axiosIns.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest';
-axiosIns.defaults.headers.get['X-Requested-With'] = 'XMLHttpRequest';
-axiosIns.defaults.responseType = 'json';
+let axiosIns = axios.create({
+  headers: {
+    //"Content-Type":"application/x-www-form-urlencoded"
+    "Content-Type":"application/json"
+    //"Content-Type":'application/x-www-form-urlencoded;charset=utf-8'
+  },
+});
+// axiosIns.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest';
+// axiosIns.defaults.headers.get['X-Requested-With'] = 'XMLHttpRequest';
+// axiosIns.defaults.responseType = 'json';
+
 axiosIns.defaults.transformRequest = [function (data) {
   //数据序列化
-  return qs.stringify(data);
+  return JSON.stringify(data)
+  //return qs.stringify(data);
 }
 ];
-axiosIns.defaults.validateStatus = function (status) {
-  return true;
-};
+// axiosIns.defaults.validateStatus = function (status) {
+//   return true;
+// };
 axiosIns.interceptors.request.use(function (config) {
   //配置config
   config.headers.Accept = 'application/json';
+  //config.headers.Accept = 'application/x-www-form-urlencoded';
   return config;
 });
 axiosIns.interceptors.response.use(function (response) {
@@ -72,14 +83,14 @@ ajaxMethod.forEach((method)=> {
          * 这里使用的是第一种方式
          * ......
          */
-        if (response.data.code == 'UNAUTHORIZED') {
-          Message({
-            message:response.data.remark,
-            type:"warning"
-          })
-          setTimeout(() => {
-            window.location.href = process.env.businessHost.host + '/' + process.env.businessHost.projectName + '/#/login';
-          }, 3000);
+        // if (response.data.code == 'UNAUTHORIZED') {
+        //   Message({
+        //     message:response.data.remark,
+        //     type:"warning"
+        //   })
+        //   setTimeout(() => {
+        //     window.location.href = process.env.businessHost.host + '/' + process.env.businessHost.projectName + '/#/login';
+        //   }, 3000);
           //toast封装：  参考ele-mint-ui
           // Toast({
           //     message: response.data.Message,
@@ -95,9 +106,9 @@ ajaxMethod.forEach((method)=> {
           //     //使用vue实例做出对应行为  change state or router
           //     //instance.$store.commit('isLoginShow',true);
           // }
-        }else {
+        // }else {
           resolve(response);
-        }
+        // }
 
       }).catch((response)=> {
         //reject response
@@ -159,7 +170,7 @@ Vue.prototype.$axios = api;
 //   iView.LoadingBar.finish();
 // });
 /* eslint-disable no-new */
-new Vue({
+window.vm = new Vue({
   router,
   store,//注册组件
   render: h => h(App)
