@@ -50,6 +50,16 @@ h1,h5{
 .in-block{
   display:inline-block;
 }
+/*发送验证码样式*/
+.vf-code{
+  text-align:center;
+  border-left:1px solid #EBEBEB;
+  line-height:24px;
+}
+.code-inner{
+  padding:4px 0;
+  width:100%;
+}
 /*项目详情-tab下灰色字体*/
 .tablist{
   font-size:.9em;

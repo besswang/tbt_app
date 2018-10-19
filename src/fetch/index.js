@@ -1,129 +1,115 @@
-import axios from 'axios'
-var qs = require('qs');
-// import * as types from '../index/mutation-types'
-// import index from '../index/index';
-// import router from '../router';
-export function fetch(options) {
-  //debugger
+// 处理promise和fetch的兼容性以及引入
+require('es6-promise').polyfill()
+import 'whatwg-fetch'
+//前置拼接url,process.env.tbtHost取的是config--dev.env.js--tbtHost
+const tHost = process.env.tbtHost && process.env.tbtHost.url;
+// 自定义headers
+const headers = {
+  'Accept': 'application/json; version=3.13.0'
+}
+
+// 处理get请求，传入参数对象拼接
+const formatUrl = obj => {
+  const params = Object.values(obj).reduce((a, b, i) => `${a}${Object.keys(obj)[i]}=${b}&`, '?')
+  return params.substring(0, params.length - 1)
+}
+
+/**
+ * @param url    (String) 接口URL
+ * @param option (Object) 参数对象，包括method(请求方式，不填默认'get')，headers(设置请求头，选填)，data(请求参数，所有请求方式均适用)
+ */
+const Fetch = (url, option = {}) => {
+  // 设置请求超时的时间，默认10秒
+  const timeout = option.timeout || 10000
+  option.headers = option.headers || headers
+  option.headers['token'] = `${window.localStorage.getItem('token')}`;
+  option.method = (option.method || 'get').toLocaleLowerCase()
+  // 格式化get请求的数据(fetch的get请求需要需要将参数拼接到url后面)
+  if (option.method === 'get') {
+    if (option.data) {
+      url = url + formatUrl(option.data)
+    }
+  }
+
+  // 对非get类请求头和请求体做处理
+  if (option.method === 'post' || option.method === 'put' || option.method === 'delete') {
+    option.headers['Content-Type'] = option.headers['Content-Type'] || 'application/json'
+
+    // 非get类请求传参时，需要将参数挂在body上
+    option.body = JSON.stringify(option.body)
+
+    // 根据后台要求，如果有时候是java请求会用qs转
+    // option.body = qs.stringify(option.data)
+  }
+  delete option.data
+
+  return addTimeout(fetch(tHost + url, option), timeout)
+}
+
+// 对请求结果进行处理：fetch请求成功后返回的是json对象
+function parseJSON (response) {
+  return response.json()
+}
+
+// 
+/**
+ * 增加超时处理：fetch本身是没有请求超时处理的，所以可以通过
+ * @param fetchPromise (Promise) fetch请求
+ * @param timeout      (Number)  请求超时的时间
+ */
+function addTimeout (fetchPromise, timeout) {
+  let timeoutFn = null
+
+  // 请求超时的Promise
+  var timeoutPromise = new Promise((resolve, reject) => {
+    timeoutFn = function () {
+      reject({
+        code: 'timeOut',
+        text: '请求超时，请重试'
+      })
+    }
+  })
+
+  // 声明Promise.race
+  const racePromise = Promise.race([
+    fetchPromise,
+    timeoutPromise
+  ])
+
+  setTimeout(function () {
+    timeoutFn()
+  }, timeout)
+
+  // 将racePromise的结果返回
   return new Promise((resolve, reject) => {
-    console.log("看op")
-    console.log(options)
-    //创建一个axios实例
-    const instance = axios.create({
-      //设置默认根地址
-      responseType:'json',
-      // baseURL: '/hn-shop-web/admin',
-      //设置请求超时设置
-      timeout: 2000,
-      //设置请求时的header
-      headers: {
-        //"Content-Type":"application/x-www-form-urlencoded"
-        //"Content-Type":"application/json"
-        //"Content-Type":'application/x-www-form-urlencoded;charset=utf-8'
-      },
+    let status = 0
+    racePromise
+      .then(response => {
+        status = response.status
+        return response
+      })
+      .then(parseJSON)
+      .then(response => {
+        // 将状态码添加到返回结果中，以备后用
+        console.log(response)
+        response.status = status
 
-      // transformRequest: [ data => {
-      //   console.log(data)
-      //   console.log("转数据了")
-      //   console.log(data)
-      //   return qs.stringify(data);
-      // }],
-
-    });
-    instance.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest';
-    instance.defaults.headers.get['X-Requested-With'] = 'XMLHttpRequest';
-    instance.defaults.transformRequest = [function (data) {
-        //数据序列化
-      return qs.stringify(data);
-      }
-    ];
-    instance.interceptors.request.use(function (config) {
-        // 在发送请求之前做些什么
-        // config.headers.accept = 'application/json'
-        return config;
-    }, function (error) {
-        // 对请求错误做些什么
-        return Promise.reject(error);
-    });
-
-    instance.interceptors.response.use(function (response) {
-      console.log(response)
-      console.log("接收数据")
-      let data = response.data;
-      //console.log(data)
-      let status = response.status;
-      if(status === 200){
-        if(data.code === 400){
-          vm.$vux.toast.text(data.msg, 'center')
-          //return false;
-        }else if(data.success){
-          return Promise.resolve(response)
+        console.log(response.success,response.code,response.status)
+        // 如果返回码在300到900之间，将以错误返回，如果需要对错误统一处理，可以放在下面判断中
+        if (/^[3-9]\d{2}$/.test(response.status) || !response.success || response.code===400) {
+          vm.$vux.toast.text(response.msg, 'top')
+          reject(response)
+          return false;
+        }else{
+          // 否则以正确值返回
+          resolve(response.data)
         }
-      }else{
-        return Promise.reject(response)
-      }
-      // if((status===200 || status === 304) && data.code==='SUCCESS' ){
-      //   return response;
-      // }else if(data.code==='FORBIDDEN' || data.code==='UNAUTHORIZED'){
-      //   // index.commit(types.LOGOUT);
-      //   // router.replace({
-      //   //     path: 'bs_login',
-      //   //     query: {redirect: router.currentRoute.fullPath}
-      //   // })
-      //   return Promise.reject(data.remark);
-      // }else{
-      //   return Promise.reject(data.remark);
-      // }
-
-    }, function (err) {
-      // 对响应错误做点什么
-      if (err && err.response) {
-        console.error(err.response.status)
-        switch (err.response.status) {
-          case 400: err.message = '请求错误(400)' ; break;
-          case 401: err.message = '未授权，请重新登录(401)'; break;
-          case 403: err.message = '拒绝访问(403)'; break;
-          case 404: err.message = '请求出错(404)'; break;
-          case 408: err.message = '请求超时(408)'; break;
-          case 500: err.message = '服务器错误(500)'; break;
-          case 501: err.message = '服务未实现(501)'; break;
-          case 502: err.message = '网络错误(502)'; break;
-          case 503: err.message = '服务不可用(503)'; break;
-          case 504: err.message = '网络超时(504)'; break;
-          case 505: err.message = 'HTTP版本不受支持(505)'; break;
-          default: err.message = `连接出错(${err.response.status})!`;
-        }
-      }else{
-        err.message = '连接服务器失败!'
-      }
-      return Promise.reject(err.message);
-    });
-    // let obj = JSON.stringify();
-    instance[options.method](options.url,options.params).then(response => {
-      // if(response.data.code==='SUCCESS'){
-        // vm.$message.success(response.data.remark)
-        resolve(response.data);
-      // }else{
-        // Promise.reject('11')
-        // vm.$message.error(response.data.remark)
-        // throw Error(response.data.remark)
-        // reject(response.data.remark)
-      // }
-
-    })
-      .catch((error) => {
-        //vm.$message.error(error)
+      })
+      .catch(error => {
+        // 请求出错则报错 Fetch Error: ***
+        console.log('Fetch Error:', error)
       })
   })
 }
-// export function fetchUpload(options) {
-//   return new Promise((resolve, reject) => {
-//     console.log(options)
-//     let config = {
-//       headers:{'Content-Type':'multipart/form-data'}
-//     };
-//     vm.$axios.post('/hn-shop-web/editor/upload',options,config).then(response=>{
-//       resolve(response.data)
-//     })
-//   })
-// }
+
+export default Fetch

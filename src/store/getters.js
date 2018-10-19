@@ -1,7 +1,7 @@
 // 二，用getters来获取state的状态，而不是直接使用state
 const getters = {
-  phone: state => state.user.register.phone,
-  password: state => state.user.register.password,
+  phone: state => state.user.login.phone,
+  password: state => state.user.login.password,
   codeDisabled:state => state.user.code.codeDisabled,
   text:state => state.user.code.text,
   count:state => state.user.code.count,

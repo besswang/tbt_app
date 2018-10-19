@@ -23,13 +23,13 @@
         </tabbar-item>
       </tabbar>
     </view-box>
+    <loading v-model="isLoading"></loading>
   </div>
 </template>
 
 <script>
   import { ViewBox, Tabbar, TabbarItem } from 'vux'
-  // import {mapGetters, mapMutations, mapActions} from 'store';
-  import { mapGetters, mapState } from 'vuex'
+  import { mapState } from 'vuex'
   export default {
     name: 'app',
     data () {
@@ -54,9 +54,7 @@
       }
     },
     computed: {
-      // ...mapGetters([
-      //   'tabbarShow'
-      // ])
+      ...mapState(['isLoading'])
     },
     methods:{
       tabbarChange (index){

@@ -1,9 +1,9 @@
 <template>
   <div class="register">
-    <x-header @on-click-back :left-options="{backText: '忘记密码'}"></x-header>
+    <x-header :left-options="{backText: '忘记密码'}"></x-header>
     <div class="charge-group mt2em">
       <group>
-        <x-input placeholder="请输入手机号">
+        <x-input placeholder="请输入手机号" v-model="tel" is-type="number" :min="11" :max="11">
           <img slot="label" style="padding-right:10px;display:block;" v-lazy="lg1" height="24">
         </x-input>
       </group>
@@ -11,12 +11,14 @@
         <flexbox>
           <flexbox-item>
             <x-input placeholder="请输入验证码">
-              <img slot="label" style="padding-right:10px;display:block;" v-lazy="lg2" height="24">
+              <img slot="label" style="padding-right:10px;display:block;" v-lazy="lg2" height="24" :src="lg2">
             </x-input>
           </flexbox-item>
-          <flexbox-item :span="1/4">
+          <flexbox-item :span="2/5">
             <div class="vf-code">
-              <span class="a-inner link-text">发送验证码</span>
+              <x-button  @click.native="registerCodeTem"
+                         :disabled="codeDisabled"
+                         class="code-inner" slot="right" type="default" mini>{{text}}</x-button>
             </div>
           </flexbox-item>
         </flexbox>
@@ -37,6 +39,7 @@
 <script>
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem, XHeader } from 'vux'
 import { LG_IMG } from '../script/commonStatic'
+import { mapActions } from 'vuex'
 export default {
   name:'Register',
   components: {
@@ -50,9 +53,25 @@ export default {
   },
   data () {
     return {
+      tel:'',
       lg1: LG_IMG[0],
       lg2: LG_IMG[1],
       lg3: LG_IMG[2],
+    }
+  },
+  computed :{
+    ...vm.$mapGetters(['codeDisabled','text'])
+  },
+  created() {
+    window.document.title = '忘记密码';
+  },
+  methods:{
+    ...vm.$mapActions(['passwordCode']),
+    //发送验证码
+    registerCodeTem(){
+      let flag = vm.$global.verifyPhone(this.tel)
+      //调用验证码接口
+      flag ? this.passwordCode(this.tel) : this.tel = ''
     }
   }
 }
@@ -68,10 +87,14 @@ export default {
     padding:0 1em;
     margin-bottom:1em;
   }
-  .vf-code{
-    text-align:center;
-    border-left:1px solid #EBEBEB;
-    line-height:24px;
+  .vf-code >>> .weui-btn:after{
+    border:none;
+  }
+  .vf-code >>> .weui-btn_mini{
+    cursor: pointer;
+    color:#3574FA;
+    font-size:10px;
+    background:#fff;
   }
   /*input表单样式重置*/
   .charge-group >>> .weui-cells:before {

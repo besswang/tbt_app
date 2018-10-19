@@ -2,10 +2,16 @@
 import * as types from '../mutation-types'
 import api from '../../api';
 
-// 注册数据
-const register = {
-  phone:'666',
+// 登陆数据
+const login = {
+  phone:'',
   password:''
+}
+//登陆后的用户数据
+const user = {
+  icon: null,
+  nickName: '',
+  token: ''
 }
 //验证码
 const code = {
@@ -16,23 +22,19 @@ const code = {
   text:'发送验证码'
 }
 const state = {
-  register,
-  code
+  login,
+  code,
+  user
 }
 const mutations = {
-  //存储手机号
-  [types.SAVE_PHONE](state,value){
-    state.register.phone = value
-  },
-  //注册时存储手机号和密码
-  [types.SAVE_REGISTER](state,data){
-    console.log("过来存了没")
-    console.log(data)
-    // state.register.phone = data.phone;
-    // state.register.password = data.password
+  //登陆后存储用户信息
+  [types.SAVE_USER](state,data){
+    state.user = data
+    window.localStorage.setItem('token',state.user.token)
   },
   //验证码倒计时
-  [types.GET_CODE](state){
+  [types.GET_CODE](state,res){
+    console.log(res)
     let code = state.code
     if (!code.timer) {
       code.count = 60;
@@ -51,170 +53,28 @@ const mutations = {
     }
   }
 }
-
-
 const actions = {
-  //存储手机号到仓库中
-  savePhone({commit},value){
-    commit(types.SAVE_PHONE,value)
+  //注册-发送验证码
+  registerCode({commit},params){
+    let res = api.registerCodeApi(params)
+    commit(types.GET_CODE,res)
   },
   //注册
   async Register({commit},params){
-    let res = await api.registerApi(params)
-    if(res){
-      commit(types.SAVE_REGISTER,res)
-    }
+    await api.registerApi(params)
+    vm.$router.push({path:'/'})
   },
-  //发送验证码
-  registerCode({commit}){
-    api.registerCodeApi(state.register.phone)?commit(types.GET_CODE):''
+  async login ({commit},params){
+    let res = await api.loginApi(params)
+    commit(types.SAVE_USER,res)
+    vm.$router.push({path:'/home'})
+  },
+  //忘记密码-发送验证码
+  passwordCode ({commit},params){
+    let res = api.passwordCodeApi(params)
+    commit(types.GET_CODE,res)
   }
 }
-// const user = {
-//   state: {
-//     logined:false,//登陆状态
-    // user: '',
-    // status: '',
-    // code: '',
-    // token: getToken(),
-    // name: '123456',
-    // avatar: '',
-    // introduction: '',
-    // roles: [],
-    // setting: {
-    //   articlePlatform: []
-    // }
-  // },
-
-  // mutations: {
-  //   SET_LOGINED:(state, logined) => {
-  //     state.logined = logined
-  //   },
-    // SET_CODE: (state, code) => {
-    //   state.code = code
-    // },
-    // SET_TOKEN: (state, token) => {
-    //   state.token = token
-    // },
-    // SET_INTRODUCTION: (state, introduction) => {
-    //   state.introduction = introduction
-    // },
-    // SET_SETTING: (state, setting) => {
-    //   state.setting = setting
-    // },
-    // SET_STATUS: (state, status) => {
-    //   state.status = status
-    // },
-    // SET_NAME: (state, name) => {
-    //   state.name = name
-    // },
-    // SET_AVATAR: (state, avatar) => {
-    //   state.avatar = avatar
-    // },
-    // SET_ROLES: (state, roles) => {
-    //   state.roles = roles
-    // }
-  // },
-  //
-  // actions: {
-    // 用户名登录
-    // LoginByUsername({ commit }, userInfo) {
-    //   const username = userInfo.username.trim()
-    //   return new Promise((resolve, reject) => {
-    //     loginByUsername(username, userInfo.password).then(response => {
-    //       const data = response.data
-    //       commit('SET_TOKEN', data.token)
-    //       setToken(response.data.token)
-    //       resolve()
-    //     }).catch(error => {
-    //       reject(error)
-    //     })
-    //   })
-    // },
-
-    // 获取用户信息
-    // GetUserInfo({ commit, state }) {
-    //   return new Promise((resolve, reject) => {
-    //     getUserInfo(state.token).then(response => {
-    //       if (!response.data) { // 由于mockjs 不支持自定义状态码只能这样hack
-    //         reject('error')
-    //       }
-    //       const data = response.data
-    //
-    //       if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-    //         commit('SET_ROLES', data.roles)
-    //       } else {
-    //         reject('getInfo: roles must be a non-null array !')
-    //       }
-    //
-    //       commit('SET_NAME', data.name)
-    //       commit('SET_AVATAR', data.avatar)
-    //       commit('SET_INTRODUCTION', data.introduction)
-    //       resolve(response)
-    //     }).catch(error => {
-    //       reject(error)
-    //     })
-    //   })
-    // },
-
-    // 第三方验证登录
-    // LoginByThirdparty({ commit, state }, code) {
-    //   return new Promise((resolve, reject) => {
-    //     commit('SET_CODE', code)
-    //     loginByThirdparty(state.status, state.email, state.code).then(response => {
-    //       commit('SET_TOKEN', response.data.token)
-    //       setToken(response.data.token)
-    //       resolve()
-    //     }).catch(error => {
-    //       reject(error)
-    //     })
-    //   })
-    // },
-
-    // 登出
-    // LogOut({ commit, state }) {
-    //   return new Promise((resolve, reject) => {
-    //     logout(state.token).then(() => {
-    //       commit('SET_TOKEN', '')
-    //       commit('SET_ROLES', [])
-    //       removeToken()
-    //       resolve()
-    //     }).catch(error => {
-    //       reject(error)
-    //     })
-    //   })
-    // },
-
-    // 前端 登出
-    // FedLogOut({ commit }) {
-    //   return new Promise(resolve => {
-    //     commit('SET_TOKEN', '')
-    //     removeToken()
-    //     resolve()
-    //   })
-    // },
-
-    // 动态修改权限
-    // ChangeRoles({ commit, dispatch }, role) {
-    //   return new Promise(resolve => {
-    //     commit('SET_TOKEN', role)
-    //     setToken(role)
-    //     getUserInfo(role).then(response => {
-    //       const data = response.data
-    //       commit('SET_ROLES', data.roles)
-    //       commit('SET_NAME', data.name)
-    //       commit('SET_AVATAR', data.avatar)
-    //       commit('SET_INTRODUCTION', data.introduction)
-    //       dispatch('GenerateRoutes', data) // 动态修改权限后 重绘侧边菜单
-    //       resolve()
-    //     })
-    //   })
-    // }
-//   }
-// }
-
-// export default user
-
 export default {
   state,
   mutations,

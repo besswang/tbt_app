@@ -3,7 +3,7 @@
     <x-header @on-click-back :left-options="{backText: '注册用户'}"></x-header>
     <div class="charge-group mt2em">
       <group>
-        <x-input placeholder="请输入手机号" v-model="tel">
+        <x-input placeholder="请输入手机号" v-model="tel" is-type="number" :min="11" :max="11">
           <img slot="label" style="padding-right:10px;display:block;" v-lazy="lg1" height="24">
         </x-input>
       </group>
@@ -19,9 +19,6 @@
               <x-button  @click.native="registerCodeTem"
                           :disabled="codeDisabled"
                          class="code-inner" slot="right" type="default" mini>{{text}}</x-button>
-              <!--<span v-show="!show" class="code-inner link-text">{{count}}</span>-->
-
-
             </div>
           </flexbox-item>
         </flexbox>
@@ -33,10 +30,9 @@
       </group>
     </div>
     <box gap="1em 1em">
-      <x-button type="primary" :disabled="disabled" @click.native="goRegisterAxios">注册Axios</x-button>
-      <x-button type="primary" :disabled="disabled" @click.native="goRegisterFetch">注册Fetch</x-button>
+      <!--<x-button type="primary" :disabled="disabled" @click.native="goRegisterAxios">注册Axios</x-button>-->
+      <x-button type="primary" :disabled="disabled" @click.native="goRegister">注册</x-button>
     </box>
-
     <p class="center foot-text" style="color:#949494;font-size:10px;">注册即代表阅读并同意
       <router-link tag='a' :to="{path: '/tcp'}">
         <span class="link-text">用户协议</span>
@@ -48,7 +44,6 @@
 <script>
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem, XHeader } from 'vux'
 import { LG_IMG } from '../script/commonStatic'
-import { mapActions, mapGetters } from 'vuex'
 export default {
   name:'Register',
   components: {
@@ -72,96 +67,39 @@ export default {
     }
   },
   computed :{
-    ...mapGetters(['codeDisabled','text','count'])
+    ...vm.$mapGetters(['codeDisabled','text','count'])
   },
   created() {
     window.document.title = '注册';
   },
   methods:{
-    ...mapActions(['registerCode','Register','savePhone']),
-    //手机验证事件
-    verifyPhone(){
-      if(this.tel===''){
-        vm.$vux.toast.text('请输入手机号', 'top')
-        return false
-      }else if(!(/^1[34578]\d{9}$/.test(this.tel))){
-        vm.$vux.toast.text('手机号码有误，请重填', 'top')
-        this.tel = ''
-        return false;
-      }else{
-        return true
-      }
-    },
-    //验证码
-    verifyCode(){
-      if(this.code===''){
-        vm.$vux.toast.text('请输入验证码', 'top')
-        return false
-      }else if(!(/^\d{4}$/.test(this.code))){
-        vm.$vux.toast.text('请准确输入验证码位数', 'top')
-        this.code = ''
-        return false;
-      }else{
-        return true
-      }
-    },
+    ...vm.$mapActions(['registerCode','Register']),
     //发送验证码
     registerCodeTem(){
-      if(this.verifyPhone()){
-        //存储到仓库
-        this.savePhone(this.tel)
-        //调用接口
-        this.registerCode(this.tel)
-      }
+      let flag = vm.$global.verifyPhone(this.tel)
+      //调用接口
+      flag ? this.registerCode(this.tel) : this.tel
     },
     //注册
-    goRegisterFetch(){
-      // let trans = {
-      //   code:"1756",
-      //   password:"123456",
-      //   phone:"1505718716"
-      // };
+    goRegister(){
       let trans = {
-        code:"1756",
-        password:"123456",
-        phone:"1505718716"
+        code:this.code,
+        password:this.pw,
+        phone:this.tel
       };
-      this.Register(trans)
+      if(vm.$global.verifyPhone(this.tel) && vm.$global.verifyCode(this.code) && vm.$global.verifyPw(this.pw)){
+        this.Register(trans)
+      }
     },
-    goRegisterAxios(){
-
-      this.$axios.post('/tbt_user/user/register',{code:"1756",password:"123456",phone:"1505718716"})
-        .then(function (response) {
-          console.log(response.data)
-        })
-        .catch(function (err) {
-          console.log(err)
-        })
-
-      // return request({
-      //   url:'/tbt_user/user/register',
-      //   method:'post',
-      //   data:{
-      //     code:'1756',
-      //     password:'123456',
-      //     phone:'123456'
-      //   }
-      // })
-
-
-      //let trans = {
-        // '"code"': this.code,
-        // '"password"': this.pw,
-        // '"phone"': this.tel
-        // code:"1756",
-        // password:"123456",
-        // phone:"1505718716"
-      //};
-      // if(this.verifyPhone() && this.verifyCode() && this.pw !== ''){
-         //this.Register(trans)
-      // }
-      //this.Register(formData)
-    }
+    // goRegisterAxios(){
+    //   this.$axios.post('/tbt_user/user/register',{code:"1756",password:"123456",phone:"1505718716"})
+    //     .then(function (response) {
+    //       console.log(response.data)
+    //     })
+    //     .catch(function (err) {
+    //       console.log(err)
+    //     })
+    // }
   }
 }
 </script>
@@ -172,15 +110,6 @@ export default {
   .charge-group{
     padding:0 1em;
     margin-bottom:1em;
-  }
-  .vf-code{
-    text-align:center;
-    border-left:1px solid #EBEBEB;
-    line-height:24px;
-  }
-  .code-inner{
-    padding:4px 0;
-    width:100%;
   }
   .vf-code >>> .weui-btn:after{
     border:none;

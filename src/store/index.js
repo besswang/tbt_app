@@ -19,9 +19,17 @@ Vue.use(Vuex)
 //     commit(types.ADD)
 //   }
 // }
+const state = {
+  isLoading: false
+};
+const mutations = {
+  updateLoadingStatus (state, payload) {
+    state.isLoading = payload.isLoading
+  }
+}
 const index = new Vuex.Store({
-  // state,
-  // mutations,
+   state,
+   mutations,
   // actions,
   getters,
   modules: {

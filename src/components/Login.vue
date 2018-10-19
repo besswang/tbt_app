@@ -1,17 +1,17 @@
 <template>
   <div class="login">
     <div class="login">
-      <img class="logo" v-lazy="logo">
+      <img class="logo" v-lazy="logo" :src="logo">
     </div>
     <div class="charge-group">
       <group>
-        <x-input placeholder="请输入手机号">
+        <x-input placeholder="请输入手机号" v-model="tel" is-type="number" :min="11" :max="11">
           <img class="pr10 block" slot="label" v-lazy="lg1" height="24">
         </x-input>
       </group>
       <group>
-        <x-input placeholder="请输入密码">
-          <img class="pr10 block" slot="label" v-lazy="lg3" height="24">
+        <x-input placeholder="请输入密码" v-model="pw">
+          <img class="pr10 block" slot="label" v-lazy="lg3" height="24" :src="lg3">
         </x-input>
       </group>
     </div>
@@ -39,8 +39,7 @@
 <script>
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem } from 'vux'
 import { LG_IMG } from '../script/commonStatic'
-// import { mapGetters } from 'vuex'
-// import api from '../api'
+import { mapActions } from 'vuex'
 export default {
   name:'Login',
   components: {
@@ -53,6 +52,8 @@ export default {
   },
   data () {
     return {
+      tel:'',
+      pw:'',
       logo: LG_IMG[3],
       lg1: LG_IMG[0],
       lg3: LG_IMG[2],
@@ -65,7 +66,30 @@ export default {
   //   console.log(this.$store.state.user.name)
   // },
   methods: {
-    doLogin() {
+    ...mapActions(['login']),
+    //手机验证事件
+    verifyPhone(){
+      if(this.tel===''){
+        vm.$vux.toast.text('请输入手机号', 'top')
+        return false
+      }else if(!(/^1[34578]\d{9}$/.test(this.tel))){
+        vm.$vux.toast.text('手机号码有误，请重填', 'top')
+        this.tel = ''
+        return false;
+      }else{
+        return true
+      }
+    },
+    doLogin(){
+      if(this.verifyPhone() && this.pw!=='' ){
+        let trans = {
+          password: this.pw,
+          phone: this.tel
+        }
+        this.login(trans)
+      }
+    }
+    // login() {
       // console.log(this.$axios.login())
       // this.$store.commit('ADD_COUNT','4455')
       // this.$axios({
@@ -104,7 +128,7 @@ export default {
         //   // this.text = 'name:' + res.name + ',age:' + res.age + 'sex:' + res.sex;
         //   console.log(res);
         // }).catch(reason => console.log(reason.message));
-      }
+      // }
     // doLogin (){
     //   if (this.userName == ''){
     //     alert('用户名不能为空');

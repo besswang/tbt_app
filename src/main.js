@@ -1,6 +1,6 @@
 import Vue from 'vue'
-// import Vuex from 'vuex' //引入状态管理
-// import { mapState, mapActions, mapGetters } from 'vuex'
+import Vuex from 'vuex' //引入状态管理
+import { mapState, mapActions, mapGetters } from 'vuex'
 import FastClick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
 import App from './App'
@@ -10,11 +10,16 @@ import store from './store/index.js'
 import './mock/index.js'
 import VueClipboard from 'vue-clipboard2'
 import axios from 'axios'
-import qs from 'qs'
 import jk from './api/jk.js'
-import { TransferDom, Loading, LoadingPlugin, Divider,ToastPlugin } from 'vux'
+import global from  './script/global'
+import { TransferDom, Loading, Divider, ToastPlugin } from 'vux'
 Vue.use(VueClipboard)
 Vue.prototype.$jk = jk
+Vue.use(Vuex)
+Vue.prototype.$mapState = mapState
+Vue.prototype.$mapActions = mapActions
+Vue.prototype.$mapGetters = mapGetters
+Vue.prototype.$global = global
 /**
  * 加载插件
  */
@@ -30,7 +35,8 @@ FastClick.attach(document.body);
 Vue.directive('transfer-dom', TransferDom);
 Vue.component('loading', Loading);
 Vue.component('divider', Divider);
-Vue.use(LoadingPlugin)
+// Vue.use(LoadingPlugin)
+// Vue.use(vuxLoadingPlugin)
 Vue.use(ToastPlugin, {position: 'bottom'})
 Vue.config.productionTip = false;
 // 封装接口-start
@@ -38,12 +44,11 @@ let axiosIns = axios.create({
   headers: {
     //"Content-Type":"application/x-www-form-urlencoded"
     "Content-Type":"application/json"
-    //"Content-Type":'application/x-www-form-urlencoded;charset=utf-8'
   },
 });
-// axiosIns.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest';
-// axiosIns.defaults.headers.get['X-Requested-With'] = 'XMLHttpRequest';
-// axiosIns.defaults.responseType = 'json';
+axiosIns.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest';
+axiosIns.defaults.headers.get['X-Requested-With'] = 'XMLHttpRequest';
+axiosIns.defaults.responseType = 'json';
 
 axiosIns.defaults.transformRequest = [function (data) {
   //数据序列化
@@ -51,12 +56,12 @@ axiosIns.defaults.transformRequest = [function (data) {
   //return qs.stringify(data);
 }
 ];
-// axiosIns.defaults.validateStatus = function (status) {
-//   return true;
-// };
+axiosIns.defaults.validateStatus = function (status) {
+  return true;
+};
 axiosIns.interceptors.request.use(function (config) {
   //配置config
-  config.headers.Accept = 'application/json';
+  //config.headers.Accept = 'application/json';
   //config.headers.Accept = 'application/x-www-form-urlencoded';
   return config;
 });
@@ -169,6 +174,18 @@ Vue.prototype.$axios = api;
 // router.afterEach(route => {
 //   iView.LoadingBar.finish();
 // });
+router.beforeEach(function (to, from, next) {
+  store.commit('updateLoadingStatus', {isLoading: true})
+  next()
+})
+
+router.afterEach(function (to) {
+  // setTimeout(() => {
+    // vm.$vux.loading.hide()
+    store.commit('updateLoadingStatus', {isLoading: false})
+  // }, 2000)
+
+})
 /* eslint-disable no-new */
 window.vm = new Vue({
   router,
