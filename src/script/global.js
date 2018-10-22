@@ -32,5 +32,25 @@ export default {
     }else{
       return true;
     }
-  }
+  },
+  // 评分的解构赋值---4.9
+  // first(num){
+  //   if(num !==null || num!=='undefined'){
+  //     const [x,y,z] = [...String(num)]
+  //     console.log("first中"+x,y,z)
+  //     return x
+  //   }
+  // },
+  // last(num){
+  //   console.log(num)
+  //   if(num !==null || num!=='undefined'){
+  //     const [x,y,z] = [...String(num)]
+  //     console.log("last中"+x,y,z)
+  //     if(x==='u'){
+  //       return 0
+  //     }else{
+  //       return z
+  //     }
+  //   }
+  // }
 }

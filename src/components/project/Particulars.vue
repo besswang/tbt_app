@@ -16,19 +16,21 @@
     <div class="pltr15 vux-1px-t">
       <flexbox align="center">
         <flexbox-item :span="1/6">
-          <img class="block radius50" style="width:100%;" src="../../assets/images/logo.png" alt="">
+          <img class="block radius50" style="width:100%;" :src="this.detail.projectLogo" alt="">
         </flexbox-item>
         <flexbox-item :span="3/6" align="center">
-          <h5 class="rc-title ellipsis">项目名项目名项目名项目名项目名项目名</h5>
-          <p class="rc-description ellipsis">LDFJDLFJDLFJDLFJDLFJDLJFDLFJD</p>
+          <h5 class="rc-title ellipsis text-l">{{this.detail.projectName}}</h5>
+          <p class="rc-description ellipsis text-l">{{this.detail.token}}</p>
         </flexbox-item>
         <flexbox-item align="right">
-          <span class="grade-big pr15 text-r"><i style="font-size:1.2em;">4</i>.9</span>
+          <span class="grade-big text-r">
+            <i style="font-size:1.2em;">{{projectScoreF}}</i>.{{textL}}
+          </span>
         </flexbox-item>
       </flexbox>
       <flexbox align="center" class="pt10 pb15">
         <flexbox-item :span="1/3"
-           v-clipboard:copy="officialURL"
+           v-clipboard:copy="this.detail.homePage"
            v-clipboard:success="onCopy"
            v-clipboard:error="onError">
           <span v-lazy:background-image="pro1" class="pro-icon"><i class="in-block" style="width:16px;"></i>官方网站</span>
@@ -37,10 +39,10 @@
           <span v-lazy:background-image="pro2" class="pro-icon" @click="paperShow = true"><i class="in-block" style="width:16px;"></i>白皮书</span>
         </flexbox-item>
         <flexbox-item align="right">
-          <span class="rc-state text-r">进行中</span>
+          <span class="rc-state text-r">{{projectStage}}</span>
         </flexbox-item>
       </flexbox>
-      <p class="rc-description" :class="ellipsis2">卡达尔诺是Ada加密货币的归宿，可用于发送和接受数字 资金平。这平种数字现金代表了卡达尔诺是Ada加密货币 的归宿，可用于发送</p>
+      <p class="rc-description" :class="ellipsis2">{{this.detail.projectSummary}}</p>
       <img v-show="flag" :src="pro3" v-lazy="pro3" alt="" class="pro3" @click="changeDown">
       <img v-show="!flag" :src="pro4" v-lazy="pro4" alt="" class="pro3" @click="changeUp">
     </div>
@@ -101,8 +103,8 @@
   },
   data () {
     return {
+      textL:0,
       showMsg:false,
-      officialURL:'https://www.baidu.com/',//官方网址
       position:'bottom',
       disabled: typeof navigator !== 'undefined' && /iphone/i.test(navigator.userAgent) && /ucbrowser/i.test(navigator.userAgent),
       tabSelected:0,//当前tab
@@ -129,11 +131,42 @@
       }
     }
   },
-
+  computed:{
+    ...vm.$mapGetters(['projectStage']),
+    ...vm.$mapState({
+      detail:state => state.project.detail
+    }),
+    projectScoreF(){
+      let text = this.detail.projectScore
+      if(text){
+        let t = Array.from(String(text))
+        if(t.length===1){
+          this.textL = 0
+          return text
+        }else{
+          let [x,y,z] = t
+          this.textL = z
+          return x
+        }
+      }
+    }
+    // first(){
+    //   return this.$global.first(this.detail.projectScore)
+    // },
+    // last(){
+    //   return this.$global.last(this.detail.projectScore)
+    // },
+  },
   mounted(){
-
+    let id = this.$route.params.id
+    //项目详情
+    //this.goDetail(id)
+    this.goDetail(15)
+    //概要
+    this.getSummary(id)
   },
   methods: {
+    ...vm.$mapActions(['goDetail','getSummary']),
     //复制
     onCopy: function (e) {
       console.log(e.text);

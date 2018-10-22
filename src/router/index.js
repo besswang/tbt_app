@@ -40,7 +40,7 @@ export default new Router({
       component: components('project/Project')//项目
     },
     {
-      path: '/project/particulars',
+      path: '/project/particulars/:id',
       name: 'Particulars',
       component: components('project/Particulars'),//项目详情
       children:[

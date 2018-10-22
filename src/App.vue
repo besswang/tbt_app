@@ -44,7 +44,7 @@
       TabbarItem
     },
     mounted:function(){
-      console.log(this)
+
     },
     // 监听,当路由发生变化的时候执行
     watch:{

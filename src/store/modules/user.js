@@ -21,20 +21,27 @@ const code = {
   codeDisabled:false,//验证按钮点击状态
   text:'发送验证码'
 }
+//banner
+const bannerList = []
 const state = {
   login,
   code,
-  user
+  user,
+  bannerList
 }
+
 const mutations = {
+  //bannerList
+  [types.BANNER_LIST](state,data){
+    state.bannerList=[...data.data]
+  },
   //登陆后存储用户信息
   [types.SAVE_USER](state,data){
-    state.user = data
+    state.user = data.data
     window.localStorage.setItem('token',state.user.token)
   },
   //验证码倒计时
-  [types.GET_CODE](state,res){
-    console.log(res)
+  [types.GET_CODE](state){
     let code = state.code
     if (!code.timer) {
       code.count = 60;
@@ -56,8 +63,13 @@ const mutations = {
 const actions = {
   //注册-发送验证码
   registerCode({commit},params){
-    let res = api.registerCodeApi(params)
-    commit(types.GET_CODE,res)
+    api.registerCodeApi(params)
+      .then((res) => {
+        if(res.success){
+          commit(types.GET_CODE)
+        }
+        vm.$vux.toast.text(res.msg, 'top')
+      })
   },
   //注册
   async Register({commit},params){
@@ -71,8 +83,17 @@ const actions = {
   },
   //忘记密码-发送验证码
   passwordCode ({commit},params){
-    let res = api.passwordCodeApi(params)
-    commit(types.GET_CODE,res)
+    api.passwordCodeApi(params)
+      .then((res) => {
+        if(res.success){
+          commit(types.GET_CODE)
+        }
+        vm.$vux.toast.text(res.msg, 'top')
+      })
+  },
+  async bannerListActions({commit}){
+    let res = await api.bannerListApi()
+    commit(types.BANNER_LIST,res)
   }
 }
 export default {

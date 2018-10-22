@@ -39,7 +39,6 @@
 <script>
 import { Group, Box, XInput, XButton, Flexbox, FlexboxItem } from 'vux'
 import { LG_IMG } from '../script/commonStatic'
-import { mapActions } from 'vuex'
 export default {
   name:'Login',
   components: {
@@ -66,7 +65,7 @@ export default {
   //   console.log(this.$store.state.user.name)
   // },
   methods: {
-    ...mapActions(['login']),
+    ...vm.$mapActions(['login']),
     //手机验证事件
     verifyPhone(){
       if(this.tel===''){

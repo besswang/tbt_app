@@ -91,10 +91,7 @@ function addTimeout (fetchPromise, timeout) {
       .then(parseJSON)
       .then(response => {
         // 将状态码添加到返回结果中，以备后用
-        console.log(response)
         response.status = status
-
-        console.log(response.success,response.code,response.status)
         // 如果返回码在300到900之间，将以错误返回，如果需要对错误统一处理，可以放在下面判断中
         if (/^[3-9]\d{2}$/.test(response.status) || !response.success || response.code===400) {
           vm.$vux.toast.text(response.msg, 'top')
@@ -102,8 +99,9 @@ function addTimeout (fetchPromise, timeout) {
           return false;
         }else{
           // 否则以正确值返回
-          resolve(response.data)
+          resolve(response)
         }
+
       })
       .catch(error => {
         // 请求出错则报错 Fetch Error: ***

@@ -1,6 +1,13 @@
 <template>
   <div class="home">
-    <swiper loop auto :list="baseList" v-model="demo01_index" @on-index-change="demo01_onIndexChange"></swiper>
+    <!--<swiper loop auto :list="baseList" v-model="demo01_index" @on-index-change="demo01_onIndexChange" @click.native="goDetial">-->
+      <!---->
+    <!--</swiper>-->
+    <swiper loop auto :aspect-ratio="310/750" @on-index-change="banner_onIndexChange" v-model="banner_index">
+      <swiper-item class="swiper-demo-img" v-for="(item, index) in bannerArr" :key="index" @click.native="goDetail(item.sourceId)">
+        <img style="width:100%;" :src="item.imageSrc">
+      </swiper-item>
+    </swiper>
     <h1 class="home-title">推荐项目</h1>
     <scroller lock-y :scrollbar-x=false>
       <ul class="recommend-ul flex flex-r flex-a-i">
@@ -33,12 +40,13 @@
 </template>
 
 <script>
-  import { Swiper, Scroller, Flexbox, FlexboxItem, Tabbar, TabbarItem } from 'vux'
+  import { Swiper, SwiperItem, Scroller, Flexbox, FlexboxItem, Tabbar, TabbarItem } from 'vux'
   import WList from '../Common/List.vue'
   export default {
     name:'Home',
     components: {
       Swiper,
+      SwiperItem,
       Scroller,
       Flexbox,
       FlexboxItem,
@@ -48,8 +56,7 @@
     },
     data () {
       return {
-        // tbIndex:0,
-        demo01_index: 0,
+        banner_index: 0,
         baseList: [{
           url: 'javascript:',
           img: 'https://ww1.sinaimg.cn/large/663d3650gy1fq66vvsr72j20p00gogo2.jpg',
@@ -66,9 +73,33 @@
         }]
       }
     },
+    computed:{
+      ...vm.$mapState({
+        bannerArr : state => state.user.bannerList
+      })
+    },
+    mounted(){
+      this.$nextTick(function () {
+        this.bannerListActions()
+        // Code that will run only after the
+        // entire view has been rendered
+      })
+    },
     methods: {
-      demo01_onIndexChange (index) {
-        this.demo01_index = index
+      ...vm.$mapActions(['bannerListActions']),
+      banner_onIndexChange (index) {
+        this.banner_index = index
+      },
+      goDetail(id){
+        if(id){
+          this.$router.push({
+            path: `/project/particulars/${id}`,
+          })
+        }else{
+          //this.$vux.toast.text('没有sourceId', 'top')
+          //console.error(new Error('没有sourceId'));
+          console.error('没有sourceId')
+        }
       }
     }
   }
